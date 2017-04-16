@@ -5,7 +5,7 @@ date: "April 11, 2017"
 output: html_document
 ---
 
-```{r setup, include=FALSE}
+```{r setup, include=FALSE, echo = TRUE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
@@ -25,8 +25,8 @@ total of 17,568 observations in this dataset.
 
 Specify the working directory and load all the libraries we'll need for this project.
 
-```{r message=FALSE}
-setwd("C:/Users/AngelSparkles/Documents/Coursera/Reproducable Research/Week 2/Project/")
+```{r message=FALSE,echo = TRUE}
+setwd("C:/Users/AngelSparkles/Documents/Coursera/Reproducable Research/Week 2/GitHub_files/")
 library(dplyr)
 library(stringr)
 library(ggplot2)
@@ -35,7 +35,7 @@ library(scales)
 
 
 Now read the data into a dataframe. We'll name the raw dataframe *data*
-```{r}
+```{r echo = TRUE}
 data<-read.csv(unz('repdata%2Fdata%2Factivity.zip','activity.csv'),header=TRUE)
 ```
 
@@ -43,19 +43,19 @@ data<-read.csv(unz('repdata%2Fdata%2Factivity.zip','activity.csv'),header=TRUE)
 
 The interval field needs to have leading zeros
 so that it can be parsed easier and converted to a timestamp value
-```{r}
+```{r echo = TRUE}
 data$time<-str_pad(data$interval,4,pad='0')
 ```
 
 Combine the date field and the newly-created time field and create a POSIX time field named **timestamp**
-```{r}
+```{r echo = TRUE}
 data$timestamp<-as.POSIXct(paste(data$date,data$time),format="%Y-%m-%d %H%M")
 head(data)
 mean5min<-mean(data$steps,na.rm=TRUE)
 meanHour <- mean5min*12
 ```
 ## What is the mean total number of steps taken per day?
-```{r}
+```{r echo = TRUE}
 #Aggregate: Sum the total steps taken on each day
 stepsPerDay<-group_by(data,date)
 totalStepsPerDay<-summarise(stepsPerDay, total=sum(steps))
@@ -69,7 +69,7 @@ print(paste("The median value is",as.integer(StepsmedianDay),"steps."))
 ### Let's visualize the wearer's steps per day over two months.
 
 First we'll plot their daily activity.
-```{r}
+```{r echo = TRUE}
 #convert the date field to POSIX
 totalStepsPerDay$date<-as.POSIXct(totalStepsPerDay$date)
 ggplot(data=totalStepsPerDay,aes(date,total,group=1))+
@@ -84,14 +84,14 @@ ggplot(data=totalStepsPerDay,aes(date,total,group=1))+
 
 We'll use 11 bins for this dataset, which means the bin width is ~2000 steps.
 
-```{r}
+```{r echo = TRUE}
 ggplot(data=totalStepsPerDay,aes(total))+geom_histogram(bins=11)+ggtitle("Steps taken in a day")+xlab("Number of Steps")+ylab("Number of Days")
 ````
 
 ## Daily Activity Pattern
 
 ### Plot all the data by time of day with a mean value line overlaid
-```{r}
+```{r echo = TRUE}
 ggplot(data,aes(as.POSIXlt(data$time,format="%H%M"),(data$steps)))+
   geom_point(alpha=0.1,color='black')+
   xlab("Time of Day")+
@@ -102,7 +102,7 @@ ggplot(data,aes(as.POSIXlt(data$time,format="%H%M"),(data$steps)))+
 ````
 
 ### Now plot the mean number of steps taken at a given time interval  
-```{r}
+```{r echo = TRUE}
 ggplot(data,aes(as.POSIXlt(data$time,format="%H%M"),(data$steps)))+
   xlab("Time of Day")+
   ylab("Steps Taken")+
@@ -112,7 +112,7 @@ ggplot(data,aes(as.POSIXlt(data$time,format="%H%M"),(data$steps)))+
 ```
 
 ### On average, during what time of day are the most steps taken?
-```{r}
+```{r echo = TRUE}
 #Group the data by time of day
 stepsPerTime<-group_by(data,interval)
 #Find the mean number of steps taken at each time of day interval
@@ -129,14 +129,14 @@ print(paste("On average, the most active time of day is",paste0(substr(maxStepsT
 ## Dealing with missing values
 
 ### How many intervals have missing data?
-```{r}
+```{r echo = TRUE}
 print(paste("This dataset contains",sum(is.na(data)),"missing values."))
 ```
 #### These missing values may be caused by either the device being turned off or not worn during these time intervals. 
 
 My strategy for filling in these missing values is to use the wearer's average number of steps taken during the missing value's interval. For example, at the  08:35 interval, the wearer, on average, takes 206 steps. If there is a missing value at this interval, I will replace the NA with 206.
 
-```{r}
+```{r echo = TRUE}
 #first, lets look at the raw data
 head(data)
 #join the averge interval vlaues to the raw dataset
@@ -148,7 +148,7 @@ head(newData)
 ```
 
 ## Now what is the mean total number of steps taken per day?
-```{r}
+```{r echo = TRUE}
 NEWstepsPerDay<-group_by(newData,date)
 NEWtotalStepsPerDay<-summarise(NEWstepsPerDay, total=sum(steps))
 #Get the mean value of the total steps taken each day
@@ -161,7 +161,7 @@ print(paste("The median value is",as.integer(NEWStepsmedianDay),"steps."))
 ### Let's visualize the wearer's steps per day over two months.
 
 First we'll plot their daily activity.
-```{r}
+```{r echo = TRUE}
 #convert the date field to POSIX
 NEWtotalStepsPerDay$date<-as.POSIXct(NEWtotalStepsPerDay$date)
 ggplot(data=NEWtotalStepsPerDay,aes(date,total,group=1))+
@@ -176,7 +176,7 @@ ggplot(data=NEWtotalStepsPerDay,aes(date,total,group=1))+
 
 We'll use 11 bins for this dataset, which means the bin width is ~2000 steps.
 
-```{r}
+```{r echo = TRUE}
 ggplot(data=NEWtotalStepsPerDay,aes(total))+geom_histogram(bins=11)+ggtitle("Steps taken in a day")+xlab("Number of Steps")+ylab("Number of Days")
 ```
 
@@ -185,12 +185,12 @@ ggplot(data=NEWtotalStepsPerDay,aes(total))+geom_histogram(bins=11)+ggtitle("Ste
 ## Are there differences in activity patterns between weekdays and weekends?
 
 for this last section, I will break up the data into two groups: weekdays and weekends.
-```{r}
+```{r echo = TRUE}
 data$weekend<-(weekdays(data$timestamp)=='Saturday'|weekdays(data$timestamp)=='Sunday')
 ```
 
 ## Now plot the two categories, **weekend** and **weekday** alongside each other to visualize the difference in activity throughout the day.
-```{r}
+```{r echo = TRUE}
 ggplot(data,aes(as.POSIXlt(data$time,format="%H%M"),(data$steps)))+
   xlab("Time of Day")+
   ylab("Steps Taken")+
